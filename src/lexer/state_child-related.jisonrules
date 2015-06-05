@@ -1,0 +1,105 @@
+<ST_CHILDBODY>{ldel}{strip}{rdel} {
+  if (this.hasAutoLiteral()) {
+     return;
+  }
+  return TP_STRIPON;
+}
+<ST_CHILDBODY>{ldel}{slash}{strip}{rdel} {
+  if (this.hasAutoLiteral()) {
+    return;
+  }
+  return TP_STRIPOFF;
+}
+<ST_CHILDBODY>{ldel}{block}  {
+  if (this.hasAutoLiteral()) {
+    return;
+  }
+  this.popState();
+  this.unput(this.matched);
+}
+<ST_CHILDBODY>{text} {
+  console.log('ACHTUNG CHILDBODY!!!' + yytext);
+  this._consume(5);
+  return;
+
+  /*$to = strlen($this->data);
+  preg_match("~SMARTYldel\s*(([/])?strip\s*SMARTYrdel|block\s+)~i",$this->data,$match,PREG_OFFSET_CAPTURE,$this->counter);
+  if (isset($match[0][1])) {
+    $to = $match[0][1];
+  }
+  $this->value = substr($this->data,$this->counter,$to-$this->counter);
+  return false;*/
+}
+
+<ST_CHILDBLOCK>{ldel}{literal}{rdel} {
+  if (this.hasAutoLiteral()) {
+    return TP_BLOCKSOURCE;
+  } else {
+    this.pushState('ST_CHILDLITERAL');
+    return TP_BLOCKSOURCE;
+  }
+}
+<ST_CHILDBLOCK>{ldel}{block} {
+  if (this.hasAutoLiteral()) {
+    return TP_BLOCKSOURCE;
+  } else {
+    this.popState();
+    this.unput(this.matched);
+  }
+}
+<ST_CHILDBLOCK>{ldel}{slash}{block} {
+  if (this.hasAutoLiteral()) {
+    return TP_BLOCKSOURCE;
+  } else {
+    this.popState();
+    this.unput(this.matched);
+  }
+}
+<ST_CHILDBLOCK>{ldel}{smartyblockchildparent} {
+  if (this.hasAutoLiteral()) {
+    return TP_BLOCKSOURCE;
+  } else {
+    this.popState();
+    this.unput(this.matched);
+  }
+}
+<ST_CHILDBLOCK>{text} {
+  this._consume(4);
+  /*$to = strlen($this->data);
+  preg_match("~SMARTYldel\s*(literal\s*SMARTYrdel|([/])?block(\s|SMARTYrdel)|[\$]smarty\.block\.(child|parent))~i",$this->data,$match,PREG_OFFSET_CAPTURE,$this->counter);
+  if (isset($match[0][1])) {
+    $to = $match[0][1];
+  }
+  $this->value = substr($this->data,$this->counter,$to-$this->counter);*/
+  return TP_BLOCKSOURCE;
+}
+
+<ST_CHILDLITERAL>{ldel}{literal}{rdel} {
+  if (this.hasAutoLiteral()) {
+    return TP_BLOCKSOURCE;
+  } else {
+    this.pushState('ST_CHILDLITERAL');
+    return TP_BLOCKSOURCE;
+  }
+}
+<ST_CHILDLITERAL>{ldel}{slash}{literal}{rdel} {
+  if (this.hasAutoLiteral()) {
+    return TP_BLOCKSOURCE;
+  } else {
+    this.popState();
+    return TP_BLOCKSOURCE;
+  }
+}
+<ST_CHILDLITERAL>{text} {
+  this._consume(4);
+  return TP_BLOCKSOURCE;
+  /*$to = strlen($this->data);
+  preg_match("~{$this->ldel}[/]?literal\s*{$this->rdel}~i",$this->data,$match,PREG_OFFSET_CAPTURE,$this->counter);
+  if (isset($match[0][1])) {
+    $to = $match[0][1];
+  } else {
+    $this->compiler->trigger_template_error ("missing or misspelled literal closing tag");
+  }
+  $this->value = substr($this->data,$this->counter,$to-$this->counter);
+  return TP_BLOCKSOURCE;*/
+}

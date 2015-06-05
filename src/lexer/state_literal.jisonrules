@@ -1,0 +1,29 @@
+<ST_LITERAL>{ldel}{literal}{rdel} {
+  this._literalCount += 1;
+  return TP_LITERAL;
+}
+
+<ST_LITERAL>{ldel}{slash}{literal}{rdel} {
+  if (this._literalCount) {
+    this._literalCount -= 1;
+    return TP_LITERAL;
+  } else {
+    this.popState();
+    return TP_LITERALEND;
+  }
+}
+
+<ST_LITERAL>{text} {
+  console.log('LITERAL');
+  var s = this._input;
+/*  $to = strlen(this.data);
+  preg_match("~{$this->ldel}[/]?literal{$this->rdel}~i",$this->data,$match,PREG_OFFSET_CAPTURE,$this->counter);
+  if (isset($match[0][1])) {
+    $to = $match[0][1];
+  } else {
+    $this->compiler->trigger_template_error ("missing or misspelled literal closing tag");
+  }
+  $this->value = substr($this->data,$this->counter,$to-$this->counter);*/
+  this._consume(s.length);
+  return TP_LITERAL;
+}

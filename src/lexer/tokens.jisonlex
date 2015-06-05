@@ -1,0 +1,87 @@
+/* smarty tokens, imported from smarty/lexer/smarty_internal_templatelexer.plex */
+
+%token TP_ANDSYM
+%token TP_APTR
+%token TP_AS
+%token TP_AT
+%token TP_ATTR
+%token TP_BACKTICK
+%token TP_BLOCKSOURCE
+%token TP_CLOSEB
+%token TP_CLOSEP
+%token TP_CLOSETAG
+%token TP_COLON
+%token TP_COMMA
+%token TP_COMMENT
+%token TP_DOLLAR
+%token TP_DOLLARID
+%token TP_DOT
+%token TP_DOUBLECOLON
+%token TP_EQUAL
+%token TP_EQUALS
+%token TP_GREATEREQUAL
+%token TP_GREATERTHAN
+%token TP_HATCH
+%token TP_HEX
+%token TP_ID
+%token TP_IDENTITY
+%token TP_INCDEC
+%token TP_INSTANCEOF
+%token TP_INTEGER
+%token TP_ISDIVBY
+%token TP_ISEVEN
+%token TP_ISEVENBY
+%token TP_ISIN
+%token TP_ISNOTDIVBY
+%token TP_ISNOTEVEN
+%token TP_ISNOTEVENBY
+%token TP_ISNOTODD
+%token TP_ISNOTODDBY
+%token TP_ISODD
+%token TP_ISODDBY
+%token TP_LAND
+%token TP_LDEL
+%token TP_LDELFOR
+%token TP_LDELFOREACH
+%token TP_LDELIF
+%token TP_LDELSETFILTER
+%token TP_LDELSLASH
+%token TP_LESSEQUAL
+%token TP_LESSTHAN
+%token TP_LITERAL
+%token TP_LITERALEND
+%token TP_LITERALSTART
+%token TP_LOR
+%token TP_LXOR
+%token TP_MATH
+%token TP_MOD
+%token TP_NAMESPACE
+%token TP_NONEIDENTITY
+%token TP_NOT
+%token TP_NOTEQUALS
+%token TP_OPENB
+%token TP_OPENP
+%token TP_PHP
+%token TP_PTR
+%token TP_QMARK
+%token TP_QUOTE
+%token TP_RDEL
+%token TP_SEMICOLON
+%token TP_SIMPLETAG
+%token TP_SINGLEQUOTESTRING
+%token TP_SMARTYBLOCKCHILDPARENT
+%token TP_SPACE
+%token TP_STEP
+%token TP_STRIPOFF
+%token TP_STRIPON
+%token TP_TEXT
+%token TP_TO
+%token TP_TYPECAST
+%token TP_UNIMATH
+%token TP_VERT
+%token TP_XMLTAG
+
+// php-related tokens
+// TP_DOUBLEQUOTE → TP_QUOTE
+// T_ENCAPSED_AND_WHITESPACE → ?
+// T_CONSTANT_ENCAPSED_STRING → TP_SINGLEQUOTESTRING

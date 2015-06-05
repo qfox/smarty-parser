@@ -1,0 +1,150 @@
+<ST_TAGBODY>{rdel} {
+  this.popState();
+  return TP_RDEL;
+}
+<ST_TAGBODY>{double_quote} {
+  console.log('asdasd');
+  this.pushState('ST_DOUBLEQUOTEDSTRING');
+  return TP_QUOTE;
+}
+<ST_TAGBODY>{singlequotestring} {
+  return TP_SINGLEQUOTESTRING;
+}
+<ST_TAGBODY>{smartyblockchildparent} {
+  this.taglineno = this.line;
+  return TP_SMARTYBLOCKCHILDPARENT;
+}
+<ST_TAGBODY>{dollar}{id} {
+  return TP_DOLLARID;
+}
+<ST_TAGBODY>{dollar} {
+  return TP_DOLLAR;
+}
+<ST_TAGBODY>{isin} {
+  return TP_ISIN;
+}
+<ST_TAGBODY>{as} {
+  return TP_AS;
+}
+<ST_TAGBODY>{to} {
+  return TP_TO;
+}
+<ST_TAGBODY>{step} {
+  return TP_STEP;
+}
+<ST_TAGBODY>{instanceof} {
+  return TP_INSTANCEOF;
+}
+<ST_TAGBODY>{lop} {
+  return TP_LOGOP;
+}
+<ST_TAGBODY>{tlop} {
+  return TP_TLOGOP;
+}
+<ST_TAGBODY>{scond} {
+  return TP_SINGLECOND;
+}
+<ST_TAGBODY>{not} {
+  return TP_NOT;
+}
+<ST_TAGBODY>{typecast} {
+  return TP_TYPECAST;
+}
+<ST_TAGBODY>{openP} {
+  return TP_OPENP;
+}
+<ST_TAGBODY>{closeP} {
+  return TP_CLOSEP;
+}
+<ST_TAGBODY>{openB} {
+  return TP_OPENB;
+}
+<ST_TAGBODY>{closeB} {
+  return TP_CLOSEB;
+}
+<ST_TAGBODY>{ptr} {
+  return TP_PTR;
+}
+<ST_TAGBODY>{aptr} {
+  return TP_APTR;
+}
+<ST_TAGBODY>{equal} {
+  return TP_EQUAL;
+}
+<ST_TAGBODY>{incdec} {
+  return TP_INCDEC;
+}
+<ST_TAGBODY>{unimath} {
+  return TP_UNIMATH;
+}
+<ST_TAGBODY>{math} {
+  return TP_MATH;
+}
+<ST_TAGBODY>{at} {
+  return TP_AT;
+}
+<ST_TAGBODY>{hatch} {
+  return TP_HATCH;
+}
+<ST_TAGBODY>{attr} {
+  // resolve conflicts with shorttag and right_delimiter starting with '='
+  // TODO:
+/*  if (substr($this->data, $this->counter + strlen($this->value) - 1, $this->rdel_length) == $this->smarty->right_delimiter) {
+    preg_match("~\s+~",$this->value,$match);
+    $this->value = $match[0];
+    return TP_SPACE;
+  } else {*/
+    return TP_ATTR;
+//  }
+}
+<ST_TAGBODY>{namespace} {
+  return TP_NAMESPACE;
+}
+<ST_TAGBODY>{id} {
+  return TP_ID;
+}
+<ST_TAGBODY>{integer} {
+  return TP_INTEGER;
+}
+<ST_TAGBODY>{backtick} {
+  this.popState();
+  return TP_BACKTICK;
+}
+<ST_TAGBODY>{vert} {
+  return TP_VERT;
+}
+<ST_TAGBODY>{dot} {
+  return TP_DOT;
+}
+<ST_TAGBODY>{comma} {
+  return TP_COMMA;
+}
+<ST_TAGBODY>{semicolon} {
+  return TP_SEMICOLON;
+}
+<ST_TAGBODY>{doublecolon} {
+  return TP_DOUBLECOLON;
+}
+<ST_TAGBODY>{colon} {
+  return TP_COLON;
+}
+<ST_TAGBODY>{qmark} {
+  return TP_QMARK;
+}
+<ST_TAGBODY>{hex} {
+  return TP_HEX;
+}
+<ST_TAGBODY>{space} {
+  return TP_SPACE;
+}
+<ST_TAGBODY>{ldel} {
+  if (this.hasAutoLiteral()) {
+    return TP_TEXT;
+  } else {
+    this.pushState('ST_TAG');
+    this.unput(this.matched);
+  }
+}
+<ST_TAGBODY>{text} {
+  return TP_TEXT;
+}

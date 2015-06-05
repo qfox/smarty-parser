@@ -1,0 +1,195 @@
+<ST_DOUBLEQUOTEDSTRING>{ldel}{literal}{rdel} {
+  return TP_TEXT;
+}
+<ST_DOUBLEQUOTEDSTRING>{ldel}{slash}{literal}{rdel} {
+  return TP_TEXT;
+}
+<ST_DOUBLEQUOTEDSTRING>{ldel}{slash} {
+  if (this.hasAutoLiteral()) {
+    return TP_TEXT;
+  } else {
+    this.pushState('ST_TAG');
+    this.unput(this.matched);
+  }
+}
+<ST_DOUBLEQUOTEDSTRING>{ldel}{id} {
+  if (this.hasAutoLiteral()) {
+    return TP_TEXT;
+  } else {
+    this.pushState('ST_TAG');
+    this.unput(this.matched);
+  }
+}
+<ST_DOUBLEQUOTEDSTRING>{ldel} {
+  if (this.hasAutoLiteral()) {
+    return TP_TEXT;
+  } else {
+    // this.taglineno = this.line;
+    this.pushState('ST_TAGBODY');
+    return TP_LDEL;
+  }
+}
+<ST_DOUBLEQUOTEDSTRING>{double_quote} {
+  this.popState();
+  return TP_QUOTE;
+}
+<ST_DOUBLEQUOTEDSTRING>{backtick}{dollar} {
+  this.unput(this.matched.slice(-1));
+  // $this->value = substr($this->value,0,-1);
+  this.pushState('ST_TAGBODY');
+  // this.taglineno = this.line;
+  return TP_BACKTICK;
+}
+<ST_DOUBLEQUOTEDSTRING>{dollar}{id} {
+  return TP_DOLLARID;
+}
+<ST_DOUBLEQUOTEDSTRING>{dollar} {
+  return TP_TEXT;
+}
+<ST_DOUBLEQUOTEDSTRING>{textdoublequoted} {
+  console.log('ACHTUNG!!!');
+  return TP_TEXT;
+}
+<ST_DOUBLEQUOTEDSTRING>{text} {
+  console.log('ACHTUNG!!!');
+  debugger;
+  // $to = strlen($this->data);
+  // $this->value = substr($this->data,$this->counter,$to-$this->counter);
+  this._consume(this._input.length);
+  return TP_TEXT;
+}
+
+
+/*
+<ST_DOUBLEQUOTEDSTRING,ST_TAGBODY>"${" {
+  this.begin('ST_LOOKING_FOR_VARNAME');
+  return T_DOLLAR_OPEN_CURLY_BRACES;
+}
+
+/* Make sure a label character follows "->", otherwise there is no property
+ * and "->" will be taken literally
+ *
+<ST_DOUBLEQUOTEDSTRING,ST_TAGBODY>"$"{LABEL}"->"[a-zA-Z_\x7f-\xff] {
+  this.less(yyleng - 3);
+  this.begin('ST_LOOKING_FOR_PROPERTY');
+  return TP_VARIABLE;
+}
+
+/* A [ always designates a variable offset, regardless of what follows
+ *
+<ST_DOUBLEQUOTEDSTRING,ST_TAGBODY>"$"{LABEL}"[" {
+  this.less(yyleng - 1);
+  this.pushState('ST_VAR_OFFSET');
+  return TP_VARIABLE;
+}
+
+<ST_DOUBLEQUOTEDSTRING,ST_TAGBODY,ST_VAR_OFFSET>"$"{LABEL} {
+  return T_VARIABLE;
+}
+
+<ST_DOUBLEQUOTEDSTRING,ST_TAGBODY>"{$" {
+  this.less(1);
+  this.begin('ST_SCRIPTING');
+  return TP_CURLY_OPEN;
+}
+/**/
+/*
+<ST_DOUBLEQUOTEDSTRING>"\"" {
+  this.popState();
+  return TP_QUOTE;
+}
+
+<ST_DOUBLEQUOTEDSTRING>{text} {
+  var s = this._input;
+  var eot = s.length;
+  var i = 0;
+  var ch;
+  if (yytext == '\\') i++;
+  while(i < eot) {
+    ch = this._input[i];
+    if (ch == '\\') {
+      i++;
+    } else if (ch == '"') {
+      i--; // exclude "
+      break;
+    } else if (false && ch == '$') {
+      ch = ++i < eot && this._input[i];
+      if ( ch == '{' || IS_LABEL_START(ch)) {
+        i -= 2;
+        break;
+      } else continue;
+    } else if (false && ch == '{') {
+      ch = ++i < eot && this._input[i];
+      if (ch == '$') {
+        i -= 2;
+        break;
+      } else continue;
+    }
+    i++;
+  }
+  this._consume(i + 1);
+  return TP_ENCAPSED_AND_WHITESPACE;
+}
+
+/**/
+
+
+// <ST_LOOKING_FOR_VARNAME>{LABEL}[[}] {
+//   this.less(yyleng - 1);
+//   this.popState();
+//   this.begin('ST_SCRIPTING');
+//   return T_STRING_VARNAME;
+// }
+
+// <ST_LOOKING_FOR_VARNAME>{ANY_CHAR} {
+//   this.popState();
+//   this.less(0);
+//   return false;
+// }
+
+
+
+// <ST_LOOKING_FOR_PROPERTY>"->" {
+//     return T_OBJECT_OPERATOR;
+// }
+
+// <ST_LOOKING_FOR_PROPERTY>{LABEL} {
+//   return T_STRING;
+// }
+
+// <ST_LOOKING_FOR_PROPERTY>{ANY_CHAR} {
+//   this.popState();
+//   this.less(0);
+//   return false;
+// }
+
+
+
+// <ST_VAR_OFFSET>[0]|([1-9][0-9]*) { /* Offset could be treated as a long */
+//     return T_NUM_STRING;
+// }
+
+// <ST_VAR_OFFSET>{LNUM}|{HNUM}|{BNUM} { /* Offset must be treated as a string */
+//     return T_NUM_STRING;
+// }
+
+
+// <ST_VAR_OFFSET>"]" {
+//   this.popState();
+//   return ']';
+// }
+
+// <ST_VAR_OFFSET>{TOKENS}|[{}"`] {
+//     return yytext;
+// }
+
+// <ST_VAR_OFFSET>[ \n\r\t\\'#] {
+//   console.log('WHITESPACES?????');
+//   return TP_ENCAPSED_AND_WHITESPACE;
+// }
+
+// <ST_VAR_OFFSET>{LABEL} {
+//     return T_STRING;
+// }
+
+/**/

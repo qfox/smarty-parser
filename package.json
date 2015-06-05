@@ -1,0 +1,47 @@
+{
+  "main": "./lib/",
+  "name": "smarty-parser",
+  "version": "0.0.1",
+  "description": "Parse smarty files to AST",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:zxqfox/smarty-parser.git"
+  },
+  "keywords": [
+    "smarty",
+    "parser",
+    "ast"
+  ],
+  "author": "Alexej Yaroshevich <zxqfox@gmail.com> (http://github.com/zxqfox)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zxqfox/smarty-parser/issues"
+  },
+  "homepage": "https://github.com/zxqfox/smarty-parser",
+  "dependencies": {
+    "lodash": "^3.8.0"
+  },
+  "devDependencies": {
+    "graceful-fs": "^3.0.6",
+    "gulp": "^3.8.11",
+    "gulp-clone": "^1.0.0",
+    "gulp-concat-util": "^0.5.2",
+    "gulp-rename": "^1.2.2",
+    "gulp-util": "^3.0.4",
+    "jison": "zxqfox/jison",
+    "jison-lex": "zxqfox/jison-lex",
+    "lex-parser": "zxqfox/lex-parser",
+    "merge2": "^0.3.5",
+    "mocha": "^2.2.4",
+    "through2": "^0.6.5",
+    "vinyl": "^0.4.6"
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "LICENSE"
+  ]
+}

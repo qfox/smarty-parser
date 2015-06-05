@@ -1,0 +1,54 @@
+<ST_TAG>{ldel}"q"{if} {
+  // if
+  this.pushState('ST_TAGBODY');
+  // this.taglineno = this.line;
+  return TP_LDELIF;
+}
+<ST_TAG>{ldel}{for} {
+  this.pushState('ST_TAGBODY');
+  // this.taglineno = this.line;
+  return TP_LDELFOR;
+}
+<ST_TAG>{ldel}{foreach} {
+  this.pushState('ST_TAGBODY');
+  // this.taglineno = this.line;
+  return TP_LDELFOREACH;
+}
+<ST_TAG>{ldel}{setfilter} {
+  this.pushState('ST_TAGBODY');
+  // this.taglineno = this.line;
+  return TP_LDELSETFILTER;
+}
+<ST_TAG>{ldel}{id}{nocacherdel} {
+  this.popState();
+  // this.taglineno = this.line;
+  return TP_SIMPLETAG;
+}
+<ST_TAG>{ldel}{slash}{notblockid}{rdel} {
+  this.popState();
+  // this.taglineno = this.line;
+  return TP_CLOSETAG;
+}
+<ST_TAG>{ldel}{dollar}{id}{nocacherdel} {
+  if (this.topState() === 'INITIAL') {
+    this.popState();
+    // this.taglineno = this.line;
+    return TP_SIMPLEOUTPUT;
+  } else {
+    // $this->value = $this->smarty->left_delimiter;
+    this.unput(this.matched.slice(1));
+    this.pushState('ST_TAGBODY');
+    // this.taglineno = this.line;
+    return TP_LDEL;
+  }
+}
+<ST_TAG>{ldel}{slash} {
+  this.pushState('ST_TAGBODY');
+  // this.taglineno = this.line;
+  return TP_LDELSLASH;
+}
+<ST_TAG>{ldel} {
+  this.pushState('ST_TAGBODY');
+  // this.taglineno = this.line;
+  return TP_LDEL;
+}
