@@ -7,7 +7,7 @@ var parse = function (code) {
     var lexems = [];
     var token = lexer.lex() || lexer.EOF;
     while (token !== lexer.EOF) {
-        lexems.push(tokens.values[token] || (':' + token));
+        lexems.push(tokens.names[token] || (':' + token));
         token = lexer.lex();
     }
     return lexems.map(function (v) {
@@ -41,22 +41,6 @@ describe('lexer', function () {
 
     });
 
-    describe('doublequoted strings', function () {
-
-        it('should fetch empty lexem', function () {
-            parse('{""}').should.eq('ldel quote quote rdel');
-        });
-
-        it('should fetch simple literal lexems', function () {
-            parse('{"foo bar"}').should.eq('ldel quote text quote rdel');
-        });
-
-        it('should fetch escaped literal lexems', function () {
-            parse('{"A\\1xB\\tC"}').should.eq('ldel quote text quote rdel');
-        });
-
-    });
-
     describe('singlequoted strings', function () {
 
         it('should fetch empty literal lexems with singlequotes', function () {
@@ -69,6 +53,22 @@ describe('lexer', function () {
 
         it('should fetch escaped literal lexems', function () {
             parse('{\'\\1x\\t\'}').should.eq('ldel singlequotestring rdel');
+        });
+
+    });
+
+    describe('doublequoted strings', function () {
+
+        it('should fetch empty lexem', function () {
+            parse('{""}').should.eq('ldel quote quote rdel');
+        });
+
+        it('should fetch simple literal lexems', function () {
+            parse('{"foo bar"}').should.eq('ldel quote text quote rdel');
+        });
+
+        it('should fetch escaped literal lexems', function () {
+            parse('{"A\\1xB\\tC"}').should.eq('ldel quote text quote rdel');
         });
 
     });
@@ -132,10 +132,10 @@ describe('lexer', function () {
 
             parse('{$a|@mod}').should.eq('ldel dollarid vert at id rdel');
 
-            parse('{"a"|mod1:"X":"Y"|mod2:"Z"}')
-                .should.eq('ldel quote text quote vert id ' +
-                    'colon quote text quote colon quote text quote ' +
-                    'vert id colon quote text quote rdel');
+            parse('{"a"|mod1:"X":3|@mod2:"Z"}')
+                .should.eq('ldel quote text quote ' +
+                    'vert id colon quote text quote colon integer ' +
+                    'vert at id colon quote text quote rdel');
 
             parse('{$a.b|mod1:$c.d|mod2:$e.f}')
                 .should.eq('ldel dollarid dot id vert id colon ' +
@@ -196,6 +196,8 @@ describe('lexer', function () {
             parse('{assign var=a value=b}').should.eq('ldel id attr id attr id rdel');
 
             parse('{assign "a" "A"}').should.eq('ldel id space quote text quote space quote text quote rdel');
+
+            parse('{assign var=\'a\' \'A\'}').should.eq('ldel id attr singlequotestring space singlequotestring rdel');
 
             parse('{$a="A"}').should.eq('ldel dollarid equal quote text quote rdel');
         });
@@ -273,6 +275,11 @@ describe('lexer', function () {
 
     describe('level 42', function () {
 
+        it('should parse tag with attr followed by text', function () {
+            parse('{tag a=$b}xxx')
+                .should.eq('ldel id attr dollarid rdel text');
+        });
+
         it('should fetch smarty specific things', function () {
             parse('{$smarty.capture.a|strip_tags|quot}')
                 .should.eq('ldel dollarid dot id dot id vert id vert id rdel');
@@ -303,12 +310,40 @@ describe('lexer', function () {
                 .should.eq('ldelforeach space dollarid as dollarid rdel ldel dollarid at id rdel closetag');
         });
 
-        it.skip('should fetch foreachelse in foreach', function () {
-            // TODO: forever young ;-(
-            parse('{foreach $a as $v}{$v}{foreachelse}-{/foreach}')
-                .should.eq('ldelforeach attr dollarid attr id rdel simpletag closetag');
+        it('should fetch text inside foreach tags', function () {
+            parse('{foreach $a as $v}xxx{/foreach}')
+                .should.eq('ldelforeach space dollarid as dollarid rdel text closetag');
         });
 
+        it('should fetch variable inside foreach tags', function () {
+            parse('{foreach $a as $v}{$v}{/foreach}')
+                .should.eq('ldelforeach space dollarid as dollarid rdel ldel dollarid rdel closetag');
+        });
+
+        it('should fetch foreachelse in foreach', function () {
+            parse('{foreach $a as $v}{$v}{foreachelse}-{/foreach}')
+                .should.eq('ldelforeach space dollarid as dollarid rdel ldel dollarid rdel simpletag text closetag');
+        });
+
+        it('should fetch simple block tags', function () {
+            parse('text1 {tag} text2 {/tag} text3')
+                .should.eq('text simpletag text closetag text');
+        });
+
+        it('should fetch block tags with attrs', function () {
+            parse('text1 {tag \'a\'} text2 {/tag} text3')
+                .should.eq('text ldel id space singlequotestring rdel text closetag text');
+        });
+
+        it('should parse php tag', function () {
+            parse('before {php}$q = 1;{/php} after')
+                .should.eq('text php text');
+        });
+
+        it('should parse capture tag with attr', function () {
+            parse('{capture name="A"}a b c{/capture}')
+                .should.eq('ldel id attr quote text quote rdel text closetag');
+        });
     });
 
 });

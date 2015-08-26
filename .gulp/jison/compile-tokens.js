@@ -30,6 +30,11 @@ module.exports = function(opts) {
 
     var res = U.trycatch(function () {
       var buffer = String(file.contents);
+
+      if (options.remove) {
+        return U.cleanupTokens(buffer);
+      }
+
       var tokens = U.fetchTokens(buffer);
       var _keys = Object.keys(tokens);
 
@@ -42,13 +47,15 @@ module.exports = function(opts) {
       }
 
       var reversed = Object.keys(tokens).reduce(function (res, token) {
-          res[tokens[token]] = token;
+          res[tokens[token]] = token
+            .replace(/^([A-Z]+)$/, function (_, v) { return '<' + v.toLowerCase() + '>'; })
+            .replace(/^TP_(.+)$/, function (_, v) { return v.toLowerCase(); });
           return res;
         }, {});
 
       return [
           '// exports token index',
-          'module.exports = ' + util.inspect({values : reversed, names : tokens}, {depth : null}) + ';\n'
+          'module.exports = ' + util.inspect({names : reversed, ids : tokens}, {depth : null}) + ';\n'
         ].join('\n');
     }, U.createError.bind(null, PLUGIN_NAME, file));
 
@@ -60,4 +67,8 @@ module.exports = function(opts) {
 
     cb(null, file);
   }
+};
+
+module.exports.remove = function () {
+  return module.exports({ remove: true });
 };

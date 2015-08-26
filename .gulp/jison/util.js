@@ -105,7 +105,7 @@ function fetchTokens(content) {
       var token = tokenLine.slice(6).trim();
       tokens[token] = i + 0x80;
       return tokens;
-    }, Object.create(null));
+    }, {'EOF': 1, 'ERROR': 2, 'SOF': 3});
 }
 
 function cleanupTokens(content) {

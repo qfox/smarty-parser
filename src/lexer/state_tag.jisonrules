@@ -1,4 +1,4 @@
-<ST_TAG>{ldel}"q"{if} {
+<ST_TAG>{ldel}{if} {
   // if
   this.pushState('ST_TAGBODY');
   // this.taglineno = this.line;
@@ -36,7 +36,7 @@
     return TP_SIMPLEOUTPUT;
   } else {
     // $this->value = $this->smarty->left_delimiter;
-    this.unput(this.matched.slice(1));
+    this.unput(yytext.slice(1));
     this.pushState('ST_TAGBODY');
     // this.taglineno = this.line;
     return TP_LDEL;
@@ -51,4 +51,7 @@
   this.pushState('ST_TAGBODY');
   // this.taglineno = this.line;
   return TP_LDEL;
+}
+<ST_TAG>{rdel} {
+  this.popState();
 }

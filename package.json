@@ -22,20 +22,24 @@
   },
   "homepage": "https://github.com/zxqfox/smarty-parser",
   "dependencies": {
+    "chalk": "^1.1.1",
     "lodash": "^3.8.0"
   },
   "devDependencies": {
+    "chai-subset": "^1.0.1",
     "graceful-fs": "^3.0.6",
     "gulp": "^3.8.11",
     "gulp-clone": "^1.0.0",
+    "gulp-concat": "^2.6.0",
     "gulp-concat-util": "^0.5.2",
     "gulp-rename": "^1.2.2",
     "gulp-util": "^3.0.4",
-    "jison": "zxqfox/jison",
     "jison-lex": "zxqfox/jison-lex",
     "lex-parser": "zxqfox/lex-parser",
     "merge2": "^0.3.5",
     "mocha": "^2.2.4",
+    "sinon": "^1.16.0",
+    "sinon-chai": "^2.8.0",
     "through2": "^0.6.5",
     "vinyl": "^0.4.6"
   },

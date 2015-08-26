@@ -6,19 +6,8 @@
   return TP_COMMENT;
 }
 
-<INITIAL>{comment} {
-  var s = this._input, i, l, ch;
-  debugger;
-  for (i = 0, l = s.length; i < l; i++) {
-    if (s[i] === '*' && s[i + 1] === this.rdel) {
-      break;
-    }
-  }
-  if (i >= l) {
-    throw new Error('missing or misspelled comment closing tag \'*' + this.rdel + '\'');
-  }
-  this._consume(i);
-  return TP_COMMENT;
+<INITIAL>{phptag} {
+  return TP_PHP;
 }
 
 // phptag {
@@ -33,17 +22,20 @@
     return TP_LITERALSTART;
   }
 }
+
 <INITIAL>{ldel} {
   if (this.hasAutoLiteral()) {
     return TP_TEXT;
   } else {
     this.pushState('ST_TAG');
-    this.unput(this.matched);
+    this.unput(this.matched.slice(-1));
   }
 }
+
 <INITIAL>{rdel} {
   return TP_TEXT;
 }
+
 // <INITIAL>phpstart {
 //   $obj = new Smarty_Internal_Compile_Private_Php();
 //   $obj->parsePhp($this);

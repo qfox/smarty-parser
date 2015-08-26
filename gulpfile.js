@@ -26,21 +26,25 @@ gulp.task('build', function (cb) {
     .pipe(jison.prepareLexer());
 
   var tokens = preparedLexer.pipe(clone())
-    .pipe(jison.tokens())
+    .pipe(jison.compileTokens())
     .pipe(rename('tokens.js'));
 
   var lexer = merge(
       preparedLexer
         .pipe(clone())
-        .pipe(jison.tokens({asVars: true})),
+        .pipe(jison.compileTokens({asVars: true})),
       preparedLexer
         .pipe(clone())
-        .pipe(jison.lexer()),
+        .pipe(jison.compileLexer()),
       gulp.src(paths.lexer.footer)
     )
     .pipe(concat({ path: 'lexer.js' }));
 
-  return merge(tokens, lexer)
+  var rawLexer = preparedLexer.pipe(clone())
+    .pipe(jison.removeTokens())
+    .pipe(rename('lexer.l'));
+
+  return merge(tokens, lexer, rawLexer)
     .pipe(cu.header(licenseJsdoc))
     .pipe(gulp.dest(paths.dist));
 });

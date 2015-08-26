@@ -1,9 +1,9 @@
 <ST_TAGBODY>{rdel} {
+  this.unput(this.matched.slice(-1));
   this.popState();
   return TP_RDEL;
 }
 <ST_TAGBODY>{double_quote} {
-  console.log('asdasd');
   this.pushState('ST_DOUBLEQUOTEDSTRING');
   return TP_QUOTE;
 }
@@ -142,7 +142,7 @@
     return TP_TEXT;
   } else {
     this.pushState('ST_TAG');
-    this.unput(this.matched);
+    this.unput(this.matched.slice(-1));
   }
 }
 <ST_TAGBODY>{text} {

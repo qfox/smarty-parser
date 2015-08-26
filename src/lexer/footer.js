@@ -36,15 +36,6 @@ lexer._consume = function(size) {
   this.match += ch;
   this.matched += ch;
 
-  if (process.env.DEBUG)
-    console.log({
-      input: this._input,
-      match: this.match,
-      matched: this.matched,
-      yytext: this.yytext,
-      size: size
-    });
-
   this._input = this._input.slice(size);
 
   if (process.env.DEBUG)
@@ -64,25 +55,17 @@ lexer.all_tokens = true;
 var lex = lexer.lex;
 lexer.lex = function() {
   var token = lex.call(this);
-  if (!this.all_tokens) {
-    while(
-      token === T_WHITESPACE ||   // ignore white space
-      token === T_COMMENT ||      // ignore single lines comments
-      (
-        !this.mode_eval && // ignore open/close tags
-        (
-          token === T_OPEN_TAG ||
-          token === T_CLOSE_TAG
-        )
-      )
-    ) {
-      token = lex.call(this);
-    }
-    if (!this.mode_eval && token == T_OPEN_TAG_WITH_ECHO) {
-      // open tag with echo statement
-      return T_ECHO;
-    }
+
+  if (process.env.DEBUG) {
+    console.log('LEX', this.showPosition());
+    process.env.DEBUG === '2' && (console.log({
+      token: token,
+      match: this.match,
+      matched: this.matched,
+      yytext: this.yytext
+    }));
   }
+
   return token;
 };
 

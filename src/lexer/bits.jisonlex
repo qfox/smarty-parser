@@ -37,6 +37,8 @@ namespace           ([0-9]*[a-zA-Z_]\w*)?(\\[0-9]*[a-zA-Z_]\w*)+
 // smartyblockchild  \$smarty\.block\.child
 // smartyblockparent \$smarty\.block\.parent
 
+phptag            {SMARTYldel}\s*"php"\s*(.)*?{SMARTYrdel}((.)*?){SMARTYldel}\s*\/"php"\s*{SMARTYrdel}
+
 slash             "/"
 
 //buggy:
