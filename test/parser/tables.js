@@ -883,6 +883,79 @@ describe('parser/tables', function () {
           { value: 'post' },
         ]);
     });
+
+    it('should parse elseif statement', function () {
+      parse([
+        '{if $test}before',
+        '{elseif $test2}middle',
+        '{else if $test3}end',
+        '{else}else',
+        '{/if}'].join(''))
+        .should.containSubset([{
+          type: 'IfStatement',
+          test: { name: 'test' },
+          consequent: [ { value: 'before' } ],
+          alternate: [ {
+            type: 'IfStatement',
+            test: { name: 'test2' },
+            consequent: [ { value: 'middle' } ],
+            alternate: [ {
+              type: 'IfStatement',
+              test: { name: 'test3' },
+              consequent: [ { value: 'end' } ],
+              alternate: [ { value: 'else' } ]
+            } ]
+          } ],
+        }]);
+    });
+
+    it('should parse while statement', function () {
+      parse('before{while $foo > 0}{$foo--}{/while}after')
+        .should.containSubset([
+          { type: 'Literal', value: 'before' },
+          {
+            type: 'WhileStatement',
+            test: {
+              type: 'BinaryExpression',
+              operator: '>',
+              left: { name: 'foo' },
+              right: { value: 0 },
+            },
+            body: [ {
+              type: 'EchoStatement',
+              value: {
+                type: 'UpdateExpression',
+                operator: '--',
+                argument: { name: 'foo' },
+              }
+            } ]
+          },
+          { type: 'Literal', value: 'after' },
+        ]);
+    });
+  });
+
+  describe('foreachs', function () {
+    it('should fetch foreachs', function () {
+      parse('{foreach from=$areaKindNotice item="noticeText"}inside{/foreach}')
+        .should.containSubset([{
+          qwe: 1
+        }]);
+    });
+
+    it('should fetch foreachs', function () {
+      parse('{foreach $a as $v}{$v@key}{/foreach}')
+        .should.containSubset([{
+          qwe: 1
+        }]);
+    });
+
+    it('should fetch foreachelse in foreach', function () {
+      parse('{foreach $a as $v}{$v}{foreachelse}-{/foreach}')
+        .should.containSubset([{
+          qwe: 1
+        }]);
+    });
   });
 
   describe('custom block statements', function () {

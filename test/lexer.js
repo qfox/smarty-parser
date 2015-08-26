@@ -335,14 +335,24 @@ describe('lexer', function () {
                 .should.eq('text ldel id space singlequotestring rdel text closetag text');
         });
 
-        it('should parse php tag', function () {
+        it('should fetch php tag', function () {
             parse('before {php}$q = 1;{/php} after')
                 .should.eq('text php text');
         });
 
-        it('should parse capture tag with attr', function () {
+        it('should fetch capture tag with attr', function () {
             parse('{capture name="A"}a b c{/capture}')
                 .should.eq('ldel id attr quote text quote rdel text closetag');
+        });
+
+        it('should fetch if/elseif/while tags', function () {
+            parse('{if 1}2{else if 3}4{else}5{/if}')
+                .should.eq('ldelif integer rdel text ldelif integer rdel text simpletag text closetag');
+        });
+
+        it('should fetch if tag with lop', function () {
+            parse('{if 1 > 3}333{/if}')
+                .should.eq('ldelif integer logop integer rdel text closetag');
         });
     });
 

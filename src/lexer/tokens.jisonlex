@@ -51,6 +51,7 @@
 %token TP_LITERAL
 %token TP_LITERALEND
 %token TP_LITERALSTART
+%token TP_LOGOP
 %token TP_LOR
 %token TP_LXOR
 %token TP_MATH
@@ -75,6 +76,7 @@
 %token TP_STRIPOFF
 %token TP_STRIPON
 %token TP_TEXT
+%token TP_TLOGOP
 %token TP_TO
 %token TP_TYPECAST
 %token TP_UNIMATH
