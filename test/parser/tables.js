@@ -730,7 +730,7 @@ describe('parser/tables', function () {
     it('should parse literal assignments', function () {
       parse('{assign var=\'v\' value=\'\'}')
         .should.containSubset([{
-          type: 'Statement',
+          type: 'TagStatement',
           id: 'assign',
           attributes: [
             {
@@ -750,7 +750,7 @@ describe('parser/tables', function () {
     it('should parse spaced literal assignments', function () {
       parse('{assign \'a\' \'A\'}')
         .should.containSubset([{
-          type: 'Statement',
+          type: 'TagStatement',
           id: 'assign',
           attributes: [
             { type: 'Literal', value: 'a' },
@@ -762,7 +762,7 @@ describe('parser/tables', function () {
     it('should parse mixed literal assignments', function () {
       parse('{assign var=\'a\' \'A\'}')
         .should.containSubset([{
-          type: 'Statement',
+          type: 'TagStatement',
           id: 'assign',
           attributes: [
             {
@@ -818,7 +818,7 @@ describe('parser/tables', function () {
     it('should parse capture block statement', function () {
       parse('{capture name=\'A\'}a b c{/capture}')
         .should.containSubset([{
-          type: 'BlockStatement',
+          type: 'TagBlockStatement',
           id: 'capture',
           attributes: [
             {
@@ -830,6 +830,111 @@ describe('parser/tables', function () {
             { type: 'Literal', value: 'a b c' }
           ]
         }]);
+    });
+  });
+
+  describe('ifs and whiles', function () {
+    it('should parse if block', function () {
+      parse('pre{if $test}inside{/if}post')
+        .should.containSubset([
+          { value: 'pre' },
+          {
+            type: 'IfStatement',
+            test: { type: 'Identifier', name: 'test' },
+            consequent: [ { type: 'Literal', value: 'inside' } ],
+            alternate: null,
+          },
+          { value: 'post' },
+        ]);
+    });
+
+    it('should parse if-else block', function () {
+      parse('pre{if $test}{else}else{/if}post')
+        .should.containSubset([
+          { value: 'pre' },
+          {
+            type: 'IfStatement',
+            test: { type: 'Identifier', name: 'test' },
+            consequent: null,
+            alternate: [ { type: 'Literal', value: 'else' } ],
+          },
+          { value: 'post' },
+        ]);
+    });
+
+    it('should parse big if-else block', function () {
+      parse('pre{if $test}before{$test}after{else}before2{$test2}after2{/if}post')
+        .should.containSubset([
+          { value: 'pre' },
+          {
+            type: 'IfStatement',
+            test: { type: 'Identifier', name: 'test' },
+            consequent: [
+              { type: 'Literal', value: 'before' },
+              { type: 'EchoStatement', value: { type: 'Identifier', name: 'test' } },
+              { type: 'Literal', value: 'after' },
+            ],
+            alternate: [
+              { type: 'Literal', value: 'before2' },
+              { type: 'EchoStatement', value: { type: 'Identifier', name: 'test2' } },
+              { type: 'Literal', value: 'after2' },
+            ],
+          },
+          { value: 'post' },
+        ]);
+    });
+  });
+
+  describe('custom block statements', function () {
+    it('should parse simple block statement', function () {
+      parse('before{BS}a b c{/BS}after')
+        .should.containSubset([
+          { type: 'Literal', value: 'before' },
+          {
+            type: 'TagBlockStatement',
+            id: 'BS',
+            body: [ { value: 'a b c' } ],
+          },
+          { type: 'Literal', value: 'after' },
+        ]);
+    });
+
+    it('should parse block with param', function () {
+      parse('before {BS p=1}a b c{/BS} after')
+        .should.containSubset([
+          { type: 'Literal', value: 'before ' },
+          {
+            type: 'TagBlockStatement',
+            id: 'BS',
+            attributes: [ { key: { name: 'p' }, value: { value: 1 } } ],
+            body: [ { value: 'a b c' } ],
+          },
+          { type: 'Literal', value: ' after' },
+        ]);
+    });
+
+    it('should parse block with variables', function () {
+      parse('before{BS p=$a}{$b}{/BS}after')
+        .should.containSubset([
+          { type: 'Literal', value: 'before' },
+          {
+            type: 'TagBlockStatement',
+            id: 'BS',
+            attributes: [ { key: { name: 'p' }, value: { name: 'a' } } ],
+            body: [ { type: 'EchoStatement', value: { name: 'b' } } ],
+          },
+          { type: 'Literal', value: 'after' },
+        ]);
+    });
+  });
+
+  describe.skip('static classes', function () {
+    it('should parse static properties and methods', function () {
+      parse('{mystaticclass::$static_var}');
+      parse('{mystaticclass::STATIC_CONSTANT_VALUE}');
+      parse('{mystaticclass::square(5)}');
+      parse('{$foo="square"}{mystaticclass::$foo(5)}');
+      parse('{mystaticclass::$foo(5)}');
     });
   });
 
@@ -855,16 +960,6 @@ describe('parser/tables', function () {
     });
   });
 
-  describe.skip('static classes', function () {
-    it('should parse static properties and methods', function () {
-      parse('{mystaticclass::$static_var}');
-      parse('{mystaticclass::STATIC_CONSTANT_VALUE}');
-      parse('{mystaticclass::square(5)}');
-      parse('{$foo="square"}{mystaticclass::$foo(5)}');
-      parse('{mystaticclass::$foo(5)}');
-    });
-  });
-
   describe.skip('custom statements', function () {
     it('should parse simple block statement', function () {
       parse('{ST}').should.containSubset([{type: 'T', value: ''}, {type: 'FUNC', name: 'ST', attrs: []}]);
@@ -877,20 +972,6 @@ describe('parser/tables', function () {
       parse('{ST $a}').should.containSubset([{type: 'T', value: ''}, {type: 'FUNC', name: 'ST', attrs: [
         {type: 'ATTR', key: {type: 'VAR', value: {type: 'VAR', value: {type: 'ID', value: 'a'}}}} // wtf
       ]}]);
-    });
-  });
-
-  describe.skip('custom block statements', function () {
-    it('should parse simple block statement', function () {
-      parse('{BS}a b c{/BS}').should.containSubset([]);
-    });
-
-    it('should parse block with param', function () {
-      parse('{BS p=1}a b c{/BS}').should.containSubset([]);
-    });
-
-    it('should parse block with variables', function () {
-      parse('{BS p=$a}{$b}{/BS}').should.containSubset([]);
     });
   });
 
