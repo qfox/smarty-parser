@@ -121,7 +121,7 @@ describe('parser/tables', function () {
             { type: 'TemplateElement', value: '', tail: false },
             { type: 'TemplateElement', value: '', tail: true },
           ], expressions: [
-            { type: 'Identifier', name: 'var' },
+            { type: 'Identifier', name: '$var' },
           ] }
         );
     });
@@ -133,7 +133,7 @@ describe('parser/tables', function () {
             { type: 'TemplateElement', value: 'foo ', tail: false },
             { type: 'TemplateElement', value: ' bar', tail: true },
           ], expressions: [
-            { type: 'Identifier', name: 'var' },
+            { type: 'Identifier', name: '$var' },
           ] }
         );
     });
@@ -146,8 +146,8 @@ describe('parser/tables', function () {
             { type: 'TemplateElement', value: ' bar ', tail: false },
             { type: 'TemplateElement', value: '', tail: true },
           ], expressions: [
-            { type: 'Identifier', name: 'foo' },
-            { type: 'Identifier', name: 'baz' },
+            { type: 'Identifier', name: '$foo' },
+            { type: 'Identifier', name: '$baz' },
           ] }
         );
     });
@@ -159,7 +159,7 @@ describe('parser/tables', function () {
             { type: 'TemplateElement', value: '', tail: false },
             { type: 'TemplateElement', value: '', tail: true },
           ], expressions: [
-            { type: 'Identifier', name: 'foo' },
+            { type: 'Identifier', name: '$foo' },
           ] }
         );
     });
@@ -168,7 +168,7 @@ describe('parser/tables', function () {
   describe('variables in tags', function () {
     it('should parse simple variable', function () {
       parse('{$d}')[0].value
-        .should.containSubset({ type: 'Identifier', name: 'd' });
+        .should.containSubset({ type: 'Identifier', name: '$d' });
     });
 
     it('should parse members', function () {
@@ -176,7 +176,7 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'MemberExpression',
           computed: false,
-          object: { type: 'Identifier', name: 'a' },
+          object: { type: 'Identifier', name: '$a' },
           property: { type: 'Literal', value: 'b' }
         });
     });
@@ -186,8 +186,8 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'MemberExpression',
           computed: false,
-          object: { type: 'Identifier', name: 'a' },
-          property: { type: 'Identifier', name: 'c' }
+          object: { type: 'Identifier', name: '$a' },
+          property: { type: 'Identifier', name: '$c' }
         });
     });
 
@@ -199,10 +199,10 @@ describe('parser/tables', function () {
             type: 'MemberExpression',
             object: {
               type: 'MemberExpression',
-              object: { type: 'Identifier', name: 'a' },
+              object: { type: 'Identifier', name: '$a' },
               property: { type: 'Literal', value: 'b' },
             },
-            property: { type: 'Identifier', name: 'c' }
+            property: { type: 'Identifier', name: '$c' }
           },
           property: { type: 'Literal', value: 'd' }
         });
@@ -220,12 +220,12 @@ describe('parser/tables', function () {
                 type: 'MemberExpression',
                 object: {
                   type: 'MemberExpression',
-                  object: { type: 'Identifier', name: 'a' },
+                  object: { type: 'Identifier', name: '$a' },
                   property: { type: 'Literal', value: 'b' },
                 },
                 property: { type: 'Literal', value: 1 },
               },
-              property: { type: 'Identifier', name: 'c' }
+              property: { type: 'Identifier', name: '$c' }
             },
             property: { type: 'Literal', value: 'd' },
           },
@@ -238,7 +238,7 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'MemberExpression',
           computed: true,
-          object: { type: 'Identifier', name: 'a' },
+          object: { type: 'Identifier', name: '$a' },
           property: { type: 'Literal', value: 0 }
         });
     });
@@ -249,7 +249,7 @@ describe('parser/tables', function () {
           object: {
             object: {
               object: {
-                object: { name: 'a' },
+                object: { name: '$a' },
                 property: { value: 0 }
               },
               property: { value: 1 }
@@ -267,10 +267,10 @@ describe('parser/tables', function () {
           computed: true,
           object: {
             type: 'MemberExpression',
-            object: { type: 'Identifier', name: 'a' },
+            object: { type: 'Identifier', name: '$a' },
             property: { type: 'Literal', value: 'b' },
           },
-          property: { type: 'Identifier', name: 'c' }
+          property: { type: 'Identifier', name: '$c' }
         });
     });
 
@@ -281,7 +281,7 @@ describe('parser/tables', function () {
           object: {
             object: {
               type: 'MemberExpression',
-              object: { type: 'Identifier', name: 'a' },
+              object: { type: 'Identifier', name: '$a' },
               property: { type: 'Literal', value: 0 },
               computed: true,
             },
@@ -299,7 +299,7 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'CallExpression',
           callee: { type: 'Identifier', name: 'mod' },
-          arguments: [ { type: 'Identifier', name: 'a' } ],
+          arguments: [ { type: 'Identifier', name: '$a' } ],
           modifier: true,
         });
     });
@@ -379,12 +379,12 @@ describe('parser/tables', function () {
               type: 'CallExpression',
               callee: { type: 'Identifier', name: 'mod1' },
               arguments: [
-                { type: 'MemberExpression', object: { name: 'a' }, property: { value : 'b' } },
-                { type: 'MemberExpression', object: { name: 'c' }, property: { value : 'd' } },
+                { type: 'MemberExpression', object: { name: '$a' }, property: { value : 'b' } },
+                { type: 'MemberExpression', object: { name: '$c' }, property: { value : 'd' } },
               ],
               modifier: true,
             },
-            { type: 'MemberExpression', object: { name: 'e' }, property: { value : 'f' } },
+            { type: 'MemberExpression', object: { name: '$e' }, property: { value : 'f' } },
           ],
           modifier: true,
         });
@@ -396,7 +396,7 @@ describe('parser/tables', function () {
       parse('{$a->b}')[0].value
         .should.containSubset({
           type: 'MemberExpression',
-          object: { name: 'a' },
+          object: { name: '$a' },
           property: { value : 'b' },
           pointer: true,
         });
@@ -406,7 +406,7 @@ describe('parser/tables', function () {
       parse('{$a->b.c}')[0].value
         .should.containSubset({
           object: {
-            object: { name: 'a', },
+            object: { name: '$a', },
             property: { value : 'b', },
             pointer: true,
           },
@@ -419,7 +419,7 @@ describe('parser/tables', function () {
       parse('{$a.b->c}')[0].value
         .should.containSubset({
           object: {
-            object: { name: 'a' },
+            object: { name: '$a' },
             property: { value : 'b' },
             pointer: false,
           },
@@ -432,7 +432,7 @@ describe('parser/tables', function () {
       parse('{$a->b[0]}')[0].value
         .should.containSubset({
           object: {
-            object: { name: 'a' },
+            object: { name: '$a' },
             property: { value: 'b' },
             pointer: true,
           },
@@ -446,7 +446,7 @@ describe('parser/tables', function () {
         .should.containSubset({
           object: {
             object: {
-              object: { name: 'a' },
+              object: { name: '$a' },
               property: { value: 'b' },
               pointer: true,
             },
@@ -462,7 +462,7 @@ describe('parser/tables', function () {
         .should.containSubset({
           object: {
             object: {
-              object: { name: 'a' },
+              object: { name: '$a' },
               property: { value: 'b' },
               pointer: true,
             },
@@ -481,7 +481,7 @@ describe('parser/tables', function () {
               object: {
                 object: {
                   object: {
-                    object: { name: 'a' },
+                    object: { name: '$a' },
                     property: { value: 'b' },
                     pointer: true,
                   },
@@ -506,7 +506,7 @@ describe('parser/tables', function () {
       parse('{$a(1)}')[0].value
         .should.containSubset({
           type: 'CallExpression',
-          callee: { name: 'a' },
+          callee: { name: '$a' },
           arguments: [ { value: 1 } ],
         });
     });
@@ -517,8 +517,8 @@ describe('parser/tables', function () {
           type: 'CallExpression',
           callee: {
             type: 'MemberExpression',
-            object: { name: 'a' },
-            property: { name: 'b' },
+            object: { name: '$a' },
+            property: { name: '$b' },
           },
           arguments: [ { value: 1 } ]
         });
@@ -529,7 +529,7 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'CallExpression',
           callee: {
-            object: { name: 'a' },
+            object: { name: '$a' },
             property: { value: 'b' },
             pointer: true,
           },
@@ -544,7 +544,7 @@ describe('parser/tables', function () {
           callee: {
             object: {
               object: {
-                object: { name: 'a' },
+                object: { name: '$a' },
                 property: { value: 'b' },
                 pointer: true,
               },
@@ -553,7 +553,7 @@ describe('parser/tables', function () {
             property: { value: 'd' },
             pointer: true
           },
-          arguments: [ { name: 'g' }, { value: 1 }, { name: 'h' } ]
+          arguments: [ { name: '$g' }, { value: 1 }, { name: '$h' } ]
         });
     });
 
@@ -566,7 +566,7 @@ describe('parser/tables', function () {
             type: 'CallExpression',
             callee: {
               type: 'MemberExpression',
-              object: { name: 'a' },
+              object: { name: '$a' },
               property: { value: 'b' },
               pointer: true,
             },
@@ -580,8 +580,8 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'BinaryExpression',
           operator: '+',
-          left: { name: 'a' },
-          right: { name: 'b' },
+          left: { name: '$a' },
+          right: { name: '$b' },
         });
     });
 
@@ -590,8 +590,8 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'BinaryExpression',
           operator: '+',
-          left: { object: { name: 'a' }, property: { value: 'b' } },
-          right: { object: { name: 'c' }, property: { value: 0 }, computed: true },
+          left: { object: { name: '$a' }, property: { value: 'b' } },
+          right: { object: { name: '$c' }, property: { value: 0 }, computed: true },
         });
     });
 
@@ -600,7 +600,7 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'BinaryExpression',
           operator: '+',
-          left: { object: { name: 'a' }, property: { value: 'b' }, pointer: true },
+          left: { object: { name: '$a' }, property: { value: 'b' }, pointer: true },
           right: { value: 0 },
         });
     });
@@ -612,7 +612,7 @@ describe('parser/tables', function () {
         .should.containSubset({
           type: 'AssignmentExpression',
           operator: '=',
-          left: { type: 'Identifier', name: 'a' },
+          left: { type: 'Identifier', name: '$a' },
           right: { type: 'Literal', value: 'A' }
         });
     });
@@ -620,8 +620,8 @@ describe('parser/tables', function () {
     it('should assign variable', function () {
       parse('{$a=$b}')[0]
         .should.containSubset({
-          left: { type: 'Identifier', name: 'a' },
-          right: { type: 'Identifier', name: 'b' },
+          left: { type: 'Identifier', name: '$a' },
+          right: { type: 'Identifier', name: '$b' },
         });
     });
 
@@ -629,7 +629,7 @@ describe('parser/tables', function () {
       parse('{$a=$b.c}')[0].right
         .should.containSubset({
           type: 'MemberExpression',
-          object: { type: 'Identifier', name: 'b' },
+          object: { type: 'Identifier', name: '$b' },
           property: { type: 'Literal', value: 'c' },
         });
     });
@@ -704,7 +704,7 @@ describe('parser/tables', function () {
           object: {
             type: 'MemberExpression',
             computed: true,
-            object: { type: 'Identifier', name: 'foo' },
+            object: { type: 'Identifier', name: '$foo' },
             property: { type: 'Literal', value: 'a' },
           },
           property: { type: 'Literal', value: 2 },
@@ -781,7 +781,7 @@ describe('parser/tables', function () {
           {
             type: 'Property',
             key: { name: 'value' },
-            value: { type: 'Identifier', name: 'b', raw: '$b' },
+            value: { type: 'Identifier', name: '$b', raw: '$b' },
           }
         ]);
     });
@@ -789,7 +789,7 @@ describe('parser/tables', function () {
     it('should parse variables in spaced attributes', function () {
       parse('{assign $b}')[0].attributes
         .should.containSubset([
-          { type: 'Identifier', name: 'b', raw: '$b' }
+          { type: 'Identifier', name: '$b', raw: '$b' }
         ]);
     });
 
@@ -797,9 +797,9 @@ describe('parser/tables', function () {
       parse('{assign $a[$c.d]}')[0].attributes[0]
         .should.containSubset({
           type: 'MemberExpression',
-          object: { name: 'a', raw: '$a' },
+          object: { name: '$a', raw: '$a' },
           property: {
-            object: { name: 'c', raw: '$c' },
+            object: { name: '$c', raw: '$c' },
             property: { value: 'd', raw: 'd' },
           }
         });
@@ -840,7 +840,7 @@ describe('parser/tables', function () {
           { value: 'pre' },
           {
             type: 'IfStatement',
-            test: { type: 'Identifier', name: 'test' },
+            test: { type: 'Identifier', name: '$test' },
             consequent: [ { type: 'Literal', value: 'inside' } ],
             alternate: null,
           },
@@ -854,7 +854,7 @@ describe('parser/tables', function () {
           { value: 'pre' },
           {
             type: 'IfStatement',
-            test: { type: 'Identifier', name: 'test' },
+            test: { type: 'Identifier', name: '$test' },
             consequent: null,
             alternate: [ { type: 'Literal', value: 'else' } ],
           },
@@ -868,15 +868,15 @@ describe('parser/tables', function () {
           { value: 'pre' },
           {
             type: 'IfStatement',
-            test: { type: 'Identifier', name: 'test' },
+            test: { type: 'Identifier', name: '$test' },
             consequent: [
               { type: 'Literal', value: 'before' },
-              { type: 'EchoStatement', value: { type: 'Identifier', name: 'test' } },
+              { type: 'EchoStatement', value: { type: 'Identifier', name: '$test' } },
               { type: 'Literal', value: 'after' },
             ],
             alternate: [
               { type: 'Literal', value: 'before2' },
-              { type: 'EchoStatement', value: { type: 'Identifier', name: 'test2' } },
+              { type: 'EchoStatement', value: { type: 'Identifier', name: '$test2' } },
               { type: 'Literal', value: 'after2' },
             ],
           },
@@ -893,15 +893,15 @@ describe('parser/tables', function () {
         '{/if}'].join(''))
         .should.containSubset([{
           type: 'IfStatement',
-          test: { name: 'test' },
+          test: { name: '$test' },
           consequent: [ { value: 'before' } ],
           alternate: [ {
             type: 'IfStatement',
-            test: { name: 'test2' },
+            test: { name: '$test2' },
             consequent: [ { value: 'middle' } ],
             alternate: [ {
               type: 'IfStatement',
-              test: { name: 'test3' },
+              test: { name: '$test3' },
               consequent: [ { value: 'end' } ],
               alternate: [ { value: 'else' } ]
             } ]
@@ -918,7 +918,7 @@ describe('parser/tables', function () {
             test: {
               type: 'BinaryExpression',
               operator: '>',
-              left: { name: 'foo' },
+              left: { name: '$foo' },
               right: { value: 0 },
             },
             body: [ {
@@ -926,7 +926,7 @@ describe('parser/tables', function () {
               value: {
                 type: 'UpdateExpression',
                 operator: '--',
-                argument: { name: 'foo' },
+                argument: { name: '$foo' },
               }
             } ]
           },
@@ -940,7 +940,7 @@ describe('parser/tables', function () {
       parse('{foreach from=$areaKindNotice item="noticeText"}inside{/foreach}')
         .should.containSubset([{
           type: 'ForEachStatement',
-          from: { name: 'areaKindNotice' },
+          from: { name: '$areaKindNotice' },
           key: null,
           item: { type: 'TemplateLiteral', quasis: [ { value: 'noticeText', tail: true } ] },
           body: [ { value: 'inside' } ],
@@ -952,12 +952,12 @@ describe('parser/tables', function () {
       parse('{foreach $a as $v}{$v@key}{/foreach}')
         .should.containSubset([{
           type: 'ForEachStatement',
-          from: { name: 'a' },
+          from: { name: '$a' },
           key: null,
-          item: { name: 'v' },
+          item: { name: '$v' },
           body: [ {
             type: 'EchoStatement',
-            value: { object: { name: 'v' }, property: { name: 'key' }, at: true },
+            value: { object: { name: '$v' }, property: { name: 'key' }, at: true },
           } ],
           attributes: null,
         }]);
@@ -969,7 +969,7 @@ describe('parser/tables', function () {
           type: 'ForEachStatement',
           body: [ {
             type: 'EchoStatement',
-            value: { name: 'v' },
+            value: { name: '$v' },
           } ],
           alternate: [ { value: 'alter' } ],
           attributes: null,
@@ -1012,8 +1012,8 @@ describe('parser/tables', function () {
           {
             type: 'TagBlockStatement',
             id: 'BS',
-            attributes: [ { key: { name: 'p' }, value: { name: 'a' } } ],
-            body: [ { type: 'EchoStatement', value: { name: 'b' } } ],
+            attributes: [ { key: { name: 'p' }, value: { name: '$a' } } ],
+            body: [ { type: 'EchoStatement', value: { name: '$b' } } ],
           },
           { type: 'Literal', value: 'after' },
         ]);
