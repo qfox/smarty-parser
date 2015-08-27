@@ -1,7 +1,7 @@
 {
   "main": "./lib/",
   "name": "smarty-parser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Parse smarty files to AST",
   "scripts": {
     "test": "mocha"
@@ -45,6 +45,8 @@
   },
   "files": [
     "lib",
+    "lib/lexer.js",
+    "lib/tokens.js",
     "README.md",
     "LICENSE"
   ]
