@@ -936,24 +936,43 @@ describe('parser/tables', function () {
   });
 
   describe('foreachs', function () {
-    it('should fetch foreachs', function () {
+    it('should fetch classic foreach', function () {
       parse('{foreach from=$areaKindNotice item="noticeText"}inside{/foreach}')
         .should.containSubset([{
-          qwe: 1
+          type: 'ForEachStatement',
+          from: { name: 'areaKindNotice' },
+          key: null,
+          item: { type: 'TemplateLiteral', quasis: [ { value: 'noticeText', tail: true } ] },
+          body: [ { value: 'inside' } ],
+          attributes: [],
         }]);
     });
 
-    it('should fetch foreachs', function () {
+    it('should fetch foreach with AS and key inside', function () {
       parse('{foreach $a as $v}{$v@key}{/foreach}')
         .should.containSubset([{
-          qwe: 1
+          type: 'ForEachStatement',
+          from: { name: 'a' },
+          key: null,
+          item: { name: 'v' },
+          body: [ {
+            type: 'EchoStatement',
+            value: { object: { name: 'v' }, property: { name: 'key' }, at: true },
+          } ],
+          attributes: null,
         }]);
     });
 
     it('should fetch foreachelse in foreach', function () {
-      parse('{foreach $a as $v}{$v}{foreachelse}-{/foreach}')
+      parse('{foreach $a as $v}{$v}{foreachelse}alter{/foreach}')
         .should.containSubset([{
-          qwe: 1
+          type: 'ForEachStatement',
+          body: [ {
+            type: 'EchoStatement',
+            value: { name: 'v' },
+          } ],
+          alternate: [ { value: 'alter' } ],
+          attributes: null,
         }]);
     });
   });
