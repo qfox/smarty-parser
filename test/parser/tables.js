@@ -90,28 +90,17 @@ describe('parser/tables', function () {
       res.should.be.an('array');
       res[0].should.include.keys('value');
       res[0].value
-        .should.containSubset(
-          { type: 'TemplateLiteral', quasis: [
-            { type: 'TemplateElement', value: '', tail: true }
-          ] });
+        .should.containSubset({ type: 'Literal', value: '', doublequoted: true });
     });
 
     it('should parse usual characters in string', function () {
       parse('{"a"}')[0].value
-        .should.containSubset(
-          { type: 'TemplateLiteral', quasis: [
-            { type: 'TemplateElement', value: 'a', tail: true }
-          ] }
-        );
+        .should.containSubset({ type: 'Literal', value: 'a', doublequoted: true });
     });
 
     it('should parse escaped entities in string', function () {
       parse('{"\\1\\t"}')[0].value
-        .should.containSubset(
-          { type: 'TemplateLiteral', quasis: [
-            { type: 'TemplateElement', value: '\1\t', tail: true }
-          ] }
-        );
+        .should.containSubset({ type: 'Literal', value: '\1\t', doublequoted: true });
     });
 
     it('should parse pure variable in string', function () {
@@ -310,7 +299,7 @@ describe('parser/tables', function () {
           type: 'CallExpression',
           callee: { type: 'Identifier', name: 'mod1' },
           arguments: [
-            { type: 'TemplateLiteral', quasis: [ { value: 'a' } ] },
+            { type: 'Literal', value: 'a' },
             { type: 'ArrayExpression', elements: [
               { type: 'Literal', value: 1 },
               { type: 'Literal', value: 11 },
@@ -326,7 +315,7 @@ describe('parser/tables', function () {
           type: 'CallExpression',
           callee: { type: 'Identifier', name: 'mod1' },
           arguments: [
-            { type: 'TemplateLiteral', quasis: [ { value: 'a' } ] },
+            { type: 'Literal', value: 'a' },
             { type: 'Literal', value: 'x' },
             { type: 'Literal', value: 2 },
           ],
@@ -942,7 +931,7 @@ describe('parser/tables', function () {
           type: 'ForEachStatement',
           from: { name: '$areaKindNotice' },
           key: null,
-          item: { type: 'TemplateLiteral', quasis: [ { value: 'noticeText', tail: true } ] },
+          item: { value: 'noticeText' },
           body: [ { value: 'inside' } ],
           attributes: [],
         }]);
@@ -1037,6 +1026,42 @@ describe('parser/tables', function () {
       parse('{mystaticclass::square(5)}');
       parse('{$foo="square"}{mystaticclass::$foo(5)}');
       parse('{mystaticclass::$foo(5)}');
+    });
+  });
+
+  describe('regression', function () {
+    it.skip('should parse nested foreachs', function () {
+      var data = [
+        '{foreach from=$groups item=filters key=groupid}',
+        '  {capture name="filters" assign="filters_content"}',
+        '    {$filters_content}',
+        '    {foreach from=$filters item=filter}',
+        '      {assign var=filterValue value=$request->getVar($filter.param_code)|intval}',
+        '      {if $filterValue == 0}',
+        '        {assign var=filterValue value=$filter.default|default:1}',
+        '      {/if}',
+        '      {foreach from=$filter.params item=param}<span data-val="{$param.1}">{$param.0}</span>{/foreach}',
+        '      {if $filter.icons}<span>',
+        '        {foreach from=$filter.icons item=icon}<span data-val="{$icon.1}">{$icon.0}</span>{/foreach}',
+        '      </span>{/if}',
+        '    {/foreach}',
+        '  {/capture}',
+        '{/foreach}',
+        '<br/>',
+        '{$filters_content}',
+      ].join('\n');
+      parse(data).should.containSubset([
+        {
+          type: 'ForEachStatement',
+          body: [
+            { type: 'TagBlockStatement', body: {
+
+            } }
+          ]
+        },
+        { value: '<br/>' },
+        { value: { name: 'filters_content' } },
+      ])
     });
   });
 
