@@ -1,7 +1,7 @@
 {
   "main": "./lib/",
   "name": "smarty-parser",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Parse smarty files to AST",
   "scripts": {
     "test": "mocha"

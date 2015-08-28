@@ -808,10 +808,10 @@ describe('parser/tables', function () {
 
   describe('block tags', function () {
     it('should parse php block statement', function () {
-      parse('{php}a b c{/php}')
+      parse('{php}\na b c\n{/php}')
         .should.containSubset([{
           type: 'PHPBlockStatement',
-          value: 'a b c',
+          value: '\na b c\n',
         }]);
     });
 

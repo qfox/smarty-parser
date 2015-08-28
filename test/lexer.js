@@ -336,7 +336,7 @@ describe('lexer', function () {
         });
 
         it('should fetch php tag', function () {
-            parse('before {php}$q = 1;{/php} after')
+            parse('before {php}\n$q = 1;\n{/php} after')
                 .should.eq('text php text');
         });
 
