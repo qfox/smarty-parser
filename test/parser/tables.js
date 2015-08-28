@@ -948,7 +948,7 @@ describe('parser/tables', function () {
             type: 'EchoStatement',
             value: { object: { name: '$v' }, property: { name: 'key' }, at: true },
           } ],
-          attributes: null,
+          attributes: [],
         }]);
     });
 
@@ -961,7 +961,7 @@ describe('parser/tables', function () {
             value: { name: '$v' },
           } ],
           alternate: [ { value: 'alter' } ],
-          attributes: null,
+          attributes: [],
         }]);
     });
   });
@@ -1019,6 +1019,151 @@ describe('parser/tables', function () {
     });
   });
 
+  describe('regression', function () {
+    it('should parse nested foreachs', function () {
+      var data = [
+        '{foreach from=$filters item=filter}',
+          '{foreach from=$params item=param}x{/foreach}',
+        '{/foreach}',
+      ].join('');
+      parse(data).should.containSubset([{
+        type: 'ForEachStatement',
+        from: { name: '$filters' },
+        item: { value: 'filter' },
+        body: [{
+          type: 'ForEachStatement',
+          from: { name: '$params' },
+          item: { value: 'param' },
+          body: [ { value: 'x' } ],
+        }]
+      }])
+    });
+
+    it('should parse foreachs inside capture', function () {
+      var data = [
+        '{foreach from=$a item=i key=k}',
+          '{capture name="b" assign="val"}',
+            '{foreach from=$filter item=param}xxx{/foreach} ',
+            '{foreach from=$filter1 item=param1}xxx1{/foreach}',
+          '{/capture}',
+        '{/foreach}',
+      ].join('');
+      parse(data).should.containSubset([
+        {
+          type: 'ForEachStatement',
+          from: { name: '$a' },
+          key: { value: 'k' },
+          item: { value: 'i' },
+          body: [ {
+            type: 'TagBlockStatement',
+            id: 'capture',
+            attributes: [
+              { key: { name: 'name' }, value: { value: 'b' } },
+              { key: { name: 'assign' }, value: { value: 'val' } },
+            ],
+            body: [
+              {
+                type: 'ForEachStatement',
+                from: { name: '$filter' },
+                item: { value: 'param' },
+                body: [ { value: 'xxx' } ],
+              },
+              { value: ' ' },
+              {
+                type: 'ForEachStatement',
+                from: { name: '$filter1' },
+                item: { value: 'param1' },
+                body: [ { value: 'xxx1' } ],
+              }
+            ]
+          } ]
+        }
+      ]);
+    });
+
+    it('should parse huge nested structure', function () {
+      var data = [
+        '{foreach from=$groups item=filters key=groupid}',
+          '{capture name="filters" assign="filters_content"}',
+            '{$filters_content}',
+            '{foreach from=$filters item=filter}',
+              '{assign var=filterValue value=$var}',
+              '{if $filterValue == 0}',
+                'xxx',
+              '{/if}',
+              '{foreach from=$filter.params item=param}<span data-val="{$param.1}">{$param.0}</span>{/foreach}',
+              '{if $filter.icons}',
+                '<span>',
+                  '{foreach from=$filter.icons item=icon}<span data-val="{$icon.1}">{$icon.0}</span>{/foreach}',
+                '</span>',
+              '{/if}',
+            '{/foreach}',
+          '{/capture}',
+        '{/foreach}',
+        '<br/>',
+        '{$filters_content}',
+      ].join('');
+      parse(data).should.containSubset([
+        {
+          type: 'ForEachStatement',
+          body: [
+            {
+              type: 'TagBlockStatement', id: 'capture',
+              attributes: [ { value: { value: 'filters' } }, { value: { value: 'filters_content' } } ],
+              body: [
+                { type: 'EchoStatement', value: { name: '$filters_content' } },
+                {
+                  type: 'ForEachStatement', item: { value: 'filter' }, from: { name: '$filters' },
+                  body: [
+                    { type: 'TagStatement', attributes: [
+                      { key: { name: 'var' }, value: { value: 'filterValue' } },
+                      { key: { name: 'value' }, value: { name: '$var' } },
+                    ] },
+                    {
+                      type: 'IfStatement',
+                      test: { type: 'BinaryExpression', operator: '==',
+                        left: { name: '$filterValue' }, right: { value: 0 } },
+                      consequent: [ { type: 'Literal', value: 'xxx' } ],
+                    },
+                    {
+                      type: 'ForEachStatement',
+                      from: { object: { name: '$filter' }, property: { value: 'params' } },
+                      item: { value: 'param' },
+                      body: [
+                        { type: 'Literal', value: '<span data-val="' },
+                        { value: { type: 'MemberExpression', object: { name: '$param' }, property: { value: 1 } } },
+                        { type: 'Literal', value: '">' },
+                        { value: { type: 'MemberExpression', object: { name: '$param' }, property: { value: 0 } } },
+                        { type: 'Literal', value: '</span>' },
+                      ]
+                    },
+                    {
+                      type: 'IfStatement',
+                      test: { object: { name: '$filter' }, property: { value: 'icons' } },
+                      consequent: [
+                        { value: '<span>' },
+                        { type: 'ForEachStatement', from: { property: { value: 'icons' } }, body: [
+                          { value: '<span data-val="' },
+                          { value: { object: { name: '$icon' }, property: { value: 1 } } },
+                          { value: '">' },
+                          { value: { object: { name: '$icon' }, property: { value: 0 } } },
+                          { value: '</span>' },
+                        ] },
+                        { value: '</span>' },
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        { value: '<br/>' },
+        { value: { name: '$filters_content' } },
+      ])
+    });
+  });
+
   describe.skip('static classes', function () {
     it('should parse static properties and methods', function () {
       parse('{mystaticclass::$static_var}');
@@ -1026,42 +1171,6 @@ describe('parser/tables', function () {
       parse('{mystaticclass::square(5)}');
       parse('{$foo="square"}{mystaticclass::$foo(5)}');
       parse('{mystaticclass::$foo(5)}');
-    });
-  });
-
-  describe('regression', function () {
-    it.skip('should parse nested foreachs', function () {
-      var data = [
-        '{foreach from=$groups item=filters key=groupid}',
-        '  {capture name="filters" assign="filters_content"}',
-        '    {$filters_content}',
-        '    {foreach from=$filters item=filter}',
-        '      {assign var=filterValue value=$request->getVar($filter.param_code)|intval}',
-        '      {if $filterValue == 0}',
-        '        {assign var=filterValue value=$filter.default|default:1}',
-        '      {/if}',
-        '      {foreach from=$filter.params item=param}<span data-val="{$param.1}">{$param.0}</span>{/foreach}',
-        '      {if $filter.icons}<span>',
-        '        {foreach from=$filter.icons item=icon}<span data-val="{$icon.1}">{$icon.0}</span>{/foreach}',
-        '      </span>{/if}',
-        '    {/foreach}',
-        '  {/capture}',
-        '{/foreach}',
-        '<br/>',
-        '{$filters_content}',
-      ].join('\n');
-      parse(data).should.containSubset([
-        {
-          type: 'ForEachStatement',
-          body: [
-            { type: 'TagBlockStatement', body: {
-
-            } }
-          ]
-        },
-        { value: '<br/>' },
-        { value: { name: 'filters_content' } },
-      ])
     });
   });
 
