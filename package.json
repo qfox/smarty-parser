@@ -22,8 +22,7 @@
   },
   "homepage": "https://github.com/zxqfox/smarty-parser",
   "dependencies": {
-    "chalk": "^1.1.1",
-    "lodash": "^3.8.0"
+    "chalk": "^1.1.1"
   },
   "devDependencies": {
     "chai-subset": "^1.0.1",
@@ -36,6 +35,7 @@
     "gulp-util": "^3.0.4",
     "jison-lex": "zxqfox/jison-lex",
     "lex-parser": "zxqfox/lex-parser",
+    "lodash": "^3.8.0",
     "merge2": "^0.3.5",
     "mocha": "^2.2.4",
     "sinon": "^1.16.0",
