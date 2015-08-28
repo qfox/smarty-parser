@@ -1,6 +1,6 @@
 var _parse = smarty.parse;
 function parse(str) {
-  return _parse(str).body;
+  return (_parse(str) || {}).body;
 }
 
 describe('parser/tables', function () {
@@ -1016,6 +1016,16 @@ describe('parser/tables', function () {
             body: [ { type: 'EchoStatement', value: { name: '$b' } } ],
           },
           { type: 'Literal', value: 'after' },
+        ]);
+    });
+  });
+
+  describe('legacy', function () {
+    it('should parse old smarty assignments', function () {
+      parse('{assign var=foo value=1}')[0].attributes
+        .should.containSubset([
+          { key: { name: 'var' }, value: { value: 'foo' } },
+          { key: { name: 'value' }, value: { value: 1 } },
         ]);
     });
   });
