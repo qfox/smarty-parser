@@ -1020,6 +1020,17 @@ describe('parser/tables', function () {
   });
 
   describe('regression', function () {
+    it('should parse unary expression', function () {
+      parse('{-2}').should.containSubset([{
+        type: 'EchoStatement',
+        value: {
+          type: 'UnaryExpression',
+          operator: '-',
+          argument: { value: 2 },
+        }
+      }]);
+    });
+
     it('should parse nested foreachs', function () {
       var data = [
         '{foreach from=$filters item=filter}',
