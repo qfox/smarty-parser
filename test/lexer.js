@@ -354,6 +354,11 @@ describe('lexer', function () {
             parse('{if 1 > 3}333{/if}')
                 .should.eq('ldelif integer logop integer rdel text closetag');
         });
+
+        it('should fetch lexical unary operators', function () {
+            parse('{if (not $a and $b) or $c}TEXT{/if}')
+                .should.eq('ldelif openp not dollarid tlogop dollarid closep tlogop dollarid rdel text closetag');
+        });
     });
 
 });

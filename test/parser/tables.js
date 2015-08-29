@@ -1031,6 +1031,23 @@ describe('parser/tables', function () {
       }]);
     });
 
+    it('should parse test in if with lexical values', function () {
+      parse('{if (not $a and $b) or $c}TEXT{/if}')
+        .should.containSubset([{
+          type: 'IfStatement',
+          test: {
+            operator: '||',
+            left: {
+              operator: '&&',
+              left: { operator: '!', argument: { name: '$a' } },
+              right: { name: '$b' },
+            },
+            right: { name: '$c' },
+          },
+          consequent: [ { value: 'TEXT' } ],
+        }]);
+    });
+
     it('should parse nested foreachs', function () {
       var data = [
         '{foreach from=$filters item=filter}',
